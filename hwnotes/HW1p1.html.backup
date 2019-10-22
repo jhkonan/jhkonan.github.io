@@ -1,0 +1,311 @@
+<html>
+<head>
+<LINK href="./formatting.css?v=3" rel="stylesheet" type="text/css">
+<title>11-785 Summer HW1 notes: I</title>
+<script type="text/x-mathjax-config" >
+        MathJax.Hub.Config({
+                tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}}
+        );
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLo
+rMML">
+</script>
+</head>
+<!-- Some Definitions -->
+\(
+    \def\W{\mathbf{W}}
+    \def\a{\mathbf{a}}
+    \def\b{\mathbf{b}}
+    \def\x{\mathbf{x}}
+    \def\y{\mathbf{y}}
+    \def\d{\mathbf{d}}
+    \def\z{\mathbf{z}}
+    \def\div{\rm div}
+\)
+<!-- End Definitions -->
+
+
+
+<h1> Understanding the Neural Network</h1>
+
+<h3 id="1"> 1.  What does a neural network do</h3>
+<p> A neural network is simply a function that takes in an input  $X$ and computes an output $Y$. In this regard, it is no different from any other function. What sets it apart from a function such as, say $y = sin(X)$, is the manner in which it is constructed. It is composed as a network of many, very simple elements that together somehow manage to perform amazing tasks. The term &ldquo;neural&rdquo; itself derives from the fact that the simple units that are networked to compose the model are conceptually similar to neurons in the brain, and were in fact originally designed as models for these neurons.</p>
+
+<!--a) Explain what the network does  (takes an input X, which could be a vector, image, anything,  predicts an output, which could be a class, or value)-->
+<h3 id="2"> 2. The basic unit of the model: the &ldquo;perceptron&rdquo;</h3>
+<p> The basic unit of a neural network is an element, often called a neuron or a perceptron that has the following structure. 
+<p style="text-align:center;"><img src="hw1p1figs/perceptron.png" width="300" alt="Perceptron"></p>
+<p> The parameters of the perceptron are a set of <i>weights</i> $w_1, w_2, \cdots, w_N$, and a <i>bias</i> $b$.
+<p>The actual computation performed by the perceptron is as follows:
+<ul>
+<li>It takes in a set of inputs $x_1$,$x_2, \cdots, x_N$.
+<li> It computes an <i>affine combination</i> $z$ given by
+\[
+z = \sum_{i=1}^N w_i x_i + b
+\]
+<li> It applies an <i>activation function</i> $a()$ to $z$ to compute the output $y$ as
+\[
+y = a(z)
+\]
+<p> We will generally not represent neurons with the detailed structure shown above, but simply represent it using the simplified structure below. Note that the weights, bias and activation are not explicitly shown in the figure, but are all always implied.
+<p style="text-align:center;"><img src="hw1p1figs/perceptronsimplified.png" width="200" alt="Perceptron"></p>
+</ul>
+<h4 id="2.1"> 2.1. The activation function</h4>
+<p> The activation function $a()$ is a deceptively simple non-linear transformation that is the source of the magical capabilities of the neural network. The most commonly used activation functions are:
+<ul>
+<li><b> Sigmoid:</b> $y = \frac{1}{1 + e^{-z}}$
+<li><b> Tanh:</b> $y = \tanh(z)$
+<li><b> Relu:</b> $y = \max(z,0)$
+<li><b> Softplus:</b> $y = \log(1 + e^z)$
+<li><b> Leaky Relu:</b> $y = \max(z, \alpha z)$, where $0 \lt \alpha \lt 1$ and is typically a small number like 0.01.
+<li><b> Elu:</b> 
+\[
+y = \begin{cases} z,~~z\gt 0 \\
+\alpha(e^z - 1)~~z \leq 0
+\end{cases}
+\]
+</ul> 
+<p style="text-align:center;"><img src="hw1p1figs/activations.png" width="800" alt="Perceptron"></p>
+<p> The figure above graphs the activation functions we have just described (for the ELU we have used $\alpha = 1$). A number of other activation functions have also been proposed in the literature. 
+<p>For simple networks (like those needed in HW1), sigmoid, tanh and Relu are the ones you may want to try first.
+<p> There is also another, special activation function, not mentioned above, called the <i>softmax</i> activation. Unlike the activations above which take a single input $z$ and output a single value $y$, the softmax activation takes in <i>multiple</i> inputs  simultaneously, and produces <i>multiple</i> outputs simultaneously. We will explain softmax activations in the next section.
+
+<h3 id="3">3. The <i>Multi-layer</i> Perceptron</h3>
+<p>  A <i>multi-layer</i> perceptron is a network of units of the kind defined above. The figure below shows a typical MLP structure.
+<p style="text-align:center;"><img src="hw1p1figs/MLP.png" width="600" alt="MLP"></p>
+<p> Each circle in the figure represents a neuron. This is a <i>multi-layer</i> perceptron because the neurons are arranged in many layers, such that neurons from any layer only connect to the neurons from immediately adjacent layers. (We will also see networks without such layered structure in the course, but such layered architectures are the most common).
+<p> The &ldquo;flow&rdquo; of information in this figure is from left to right. Each layer of neurons computes its outputs, using the ouputs of the layer of neurons immediately preceding it (to its left).
+<p> The blue bullets in the figure represent the input.  There are no neurons here, just the inputs; nevertheless this layer of elements is called the <i>input layer</i>. Again, to reiterate -- <i> there are no neurons in the input layer. The input layer is just the location in the network from where inputs are provided to the network.</i>
+<p> The layers between the input and the final layer are called <i>hidden layers</i>. That is because the outputs of these layers are not directly observed -- the actual output of the network is the output of the final layer. In this example there are three hidden layers.
+<p> The final layer (to the extreme right) is the <i>output layer</i>. The outputs of this layer of neurons is returned to the user. The output layer is different from other layers, so it is worth spending some time on it.
+<h4 id-"3.1"> 3.1. The output layer</h4>
+<p> In the figure the output layer is shown enclosed in a blue rectangular box. This is to indicate that this is not infact a set of 4 independent units. In most problems, the network is used to perform a classification task, where we must select one of $K$ classes for a given input. Rather than directly choosing the class, the network actually outputs the <i>a posteriori</i> probability of each of the classes (i.e. given an input $X$, it outputs $P(class=i|X)$). In this figure there are four outputs, indicating that the network is classifying between four classes. Each of the four outputs is the <i>a posteriori</i> probability of one of the classes. .
+<p> Since the four outputs are the probabilities for four classes, they must all sum to 1.0. In other words, the individual outputs are <i>not independent of one another</i>. Modifying one output (e.g. increasing it) will affect the other outputs, so that they all sum to 1.0. In order to achieve this behavior, it is not sufficient to use regular activation functions. For the output layer we must use the <i>softmax</i> activation mentioned earlier.
+<h4 id="3.2"> 3.2. The <i>softmax</i> activation</h4>
+<p> The softmax activation takes multiple inputs and produces multiple outputs that sum to 1.0. Given $N$ inputs $x_1, \cdots x_N$, it computes $M$ outputs $y_1, \cdots, y_M$, where the $i^{\rm th}$ output, using the two step process shown below. In the first, it computes $M$ independent affine combinations, $z_1, \cdots, z_M$ as
+\[
+z_i = \sum_{j=1}^N w_{ij} x_j + b_i
+\]
+<p>Subsequently, it computes the $M$ outputs $y_1,\cdots, y_M$ as
+\[
+y_i = \frac{e^{z_i}}{\sum_{j=1}^N e^{z_j}}
+\]
+<p> Note that the outputs sum to 1.0.
+
+<p> The softmax activation is typically used in the <i>final layer</i> of a neural network, to assign probabilities to various outcomes. 
+<h3 id="4"> 4. Computing using the multi-layer perceptron</h3>
+<p>The MLP shown above can now be used to process inputs.
+<h4 id="4.1"> 4.1. Representing the Input</h4>
+<p> The first step in using the MLP is to determine how the <i>input</i> to it is represented.  MLPs are mathematical machines -- they take in numbers and output numbers. So any input provided must first be converted to a vector (or matrix)  of numbers.
+<p> The task of converting your input (which could be as complex as the state of a game) to a suitable numeric vector is itself challenging. Fortunately, for simple tasks like classifying MNIST digits (as is required for HW1), you can simply arrange pixel values (which are, after all, numbers) into a vector, and voila, you have your numeric input vector.
+<p> We will deal with numeric representations of more complex inputs later in the course. 
+<h4 id="4.2"> 4.2. Representing the Output</h4>
+<p> The output of the network too is expected to be numeric. In a classification task, such as classifying input images of digits into one of 10 digit classes, we will require an appropriate way of representing classes numerically.
+<p> We will do so using <i>one-hot</i> vectors. A one-hot vector is a vector that contains a single component that has value 1, and all other components are 0. So, for instance $[0\,0\,1\,0\,0]$ is a one-hot vector.
+<p> We will represent classes as one-hot vectors.  The dimensionality (number of components) of the vector will be the total number of classes.  To represent the $i^{\rm th}$ class, we will use a one-hot vector whose $i^{\rm th}$ component is 1, and all other components are 0.
+<p> Thus, if the task is digit classifiction (recognize images of digits), then each digit would be represented by a 10-dimensional one-hot vector, where the digit 0 would be represented by $[1\,0\,0\,0\,0\,0\,0\,0\,0\,0]$, the digit 1 would be represented by $[0\,1\,0\,0\,0\,0\,0\,0\,0\,0]$, the digit 2 by $[0\,0\,1\,0\,0\,0\,0\,0\,0\,0]$, and so on. Ideally, when the network is presented by an image of the digit 2, the 10-dimensional output must have the one-hot value $[0\,0\,1\,0\,0\,0\,0\,0\,0\,0]$. Observe that this also has the interpretation that in the ideal case the network must assign a probability of 1 to the digit 2, and 0 to everything else. 
+<h4 id="4.3"> 4.3. The operation of the MLP</h4>
+<p> The MLP must take in an input $\x$ (comprising components $x_1, \cdots, x_N$) and compute the output $\y$ (comprising components $y_1, cdots, y_M)$. The computation of the MLP is preformed sequentially from the neurons closest to the input, progressing until the neurons at the output, in such a manner that when each neuron is evaluated, all of the values it requires as input are already evaluated. So, first the neurons that directly receive the input $X$ are evaluated. Then the neurons that use the values computed by these first-level neurons as inputs are evaluated, and so on.
+<p> Consider a network a layered architecture, like the one in the figure above, with several hidden layers, and final output layer composed of a softmax unit. We use the following notation.
+<ul>
+<li> Let $N$ be the dimensionality of the input.
+<li> Let $L$ be the number of layers of neurons (not counting the input layer). <li> Let $N_l$ be the number of neurons in the $l^{\rm th}$ layer. 
+<li> Let $w_{i,j}^l$ be the weight of the connection from the $j^{\rm th}$ unit of the $(l-1)^{\rm th}$ layer to the $i^{\rm th}$ unit of the $l^{\rm th}$ layer (note the order of the indices).
+<li> Let $b_{i}^l$ be the bias of the $i^{\rm th}$ unit of the $l^{\rm th}$ layer.
+<li> Let $y_i^l$ be the output of the  $i^{\rm th}$ unit of the $l^{\rm th}$ layer.
+<li> Let $a()$ be the activation functions used.
+</ul>
+<p> The computations are performed as follows.
+<div class="box">
+<p># The first hidden layer works off the input
+<p style="line-height:75%">
+for $i$ = 1:$N_1$
+<p style="margin-left: 40px; line-height:75%">    
+    $z_i^1 = \sum_{j=1}^N w_{ij}^1 x_j + b_i^1 \\ y_i^1 = a(z_i^l)$
+<p>end
+<p># Subsequent hidden layers work from the output of previous layers
+<p>for $l$ = 2:$L-1$
+<p style="margin-left: 40px">    for $i$ = 1:$N_l$
+<p style="margin-left: 80px">        $z_i^l = \sum_{j=1}^{N_{l-1}} w_{ij}^l y_j^{l-1} + b_i^l \\ y_i^l = a(z_i^l)$
+<p style="margin-left: 40px">    end
+<p>end
+<p># The softmax of the output layer. First compute the $z$s, and then the $y$s.
+<p>for $i$ = 1:$N_L$
+<p style="margin-left: 40px">    $z_i^L = \sum_{j=1}^{N_{L-1}} w_{ij}^L y_j^{L-1} + b_i^L$
+<p>end
+<p>for $i$ = 1:$N_L$
+<p style="margin-left: 40px">    $y_i^L = \frac{\exp(z_i^L)}{\sum_{j=1}^{N_L} \exp(z_j^L)}$
+<p>end
+</div>
+<p> Note that $y_i = y_i^L$ is the output of the network. $y_i$ is the probability assigned to the $i^{\rm th}$ class by the network. To attribute a unique class to the input, you only need to pick the most probable class, e.g. as
+\[
+class(\x) = \arg\max_i y_i
+\]
+
+<h4 id="4.4"> 4.4. The operation of the MLP in vector math</h4>
+<p> In practice, you wouldn't implement the code as it is given above. It would be too inefficient. Instead, you would use matrix and vector operations, since these can be very efficiently computed using appropriate libraries.
+<p> In order to do this in vector format, we will define the following. 
+<ul>
+<li> The input $x_1,\cdots, x_N$ is arranged an an $N$-dimensional vector: $\x = [x_1, \cdots, x_N]^\top$. 
+<li> We arrange the outputs of the $l^{\rm th}$ layer of neurons an $N_l$-dimensional vector $\y^l = [y_1^l,\cdots,y_{N_l}^l]^\top$ (for $l = 1,\cdots,L$. 
+<li> The outputs of the neurons are the outputs of the activation functions at the neurons. The activation functions actually operate on the affine combinations $z_1^l,\cdots,z_{N_l}^l$. We arrange these too as a vector $\z^l=[z_1^l,\cdots,z_{N_l}^l]^\top$.
+<li> We arrange the weights for the $l^{\rm th}$ layer as a matrix:
+\[
+\W^l = \begin{bmatrix} 
+w_{11}^l & w_{12}^l & . & . &. & w_{1N_{l-1}}^l \\
+w_{21}^l & w_{22}^l & . & . &. & w_{2N_{l-1}}^l \\
+. & . & . & . &. & . \\
+w_{N_l1}^l & w_{N_l2}^l & . & . &. & w_{N_lN_{l-1}}^l
+\end{bmatrix}
+\].
+<li> We arrange the biases for the $l^{\rm th}$ layer units as a vector $\b_l = [b_1^l,\cdots,b_{N_l}^l]^\top$.
+</ul>
+<p> We can now write out the operations required to compute the MLP much more simply as follows. 
+<div class="box">
+<p># The first hidden layer works off the input
+<p>$\z^l = \W^1\x \\ \y^1 = \a(\z^1)$
+<p># Subsequent hidden layers work from the output of previous layers
+<p>for $l$ = 2:$L-1$
+<p style="margin-left: 40px">   $\z^l = \W^l \y^{l-1} \\ \y^l = \a(\z^l)$
+<p>end
+<p># The softmax of the output layer.
+<p> $\z^L = \W^L \y^{L-1} \\ \y^L = {\rm softmax}(\z^{L})$
+</div>
+<p> As before $\y = \y^L$ is the output of the network, representing a vector of probabilities for the classes.
+<p>Note that in the modified notation, the activation functions $\a()$ take in a vector of inputs, apply the appropriate activation function individually to each component of the vector, and produce a vector output. Thus, if you chose RELU as your activation, $\y = \a(\z)$ would apply the RELU to each component of $\z$ to produce the corresponding component of $\y$. This effectively represents a <i>vectorized</i> version of the activation function. The softmax activation, however, operates exactly as before.
+
+<p> Also note that in the notes above we are assuming all vectors are column vectors. If you use <i>row</i> vectors instead in your code, you will have to transpose all equations, and change the order of multiplication (i.e. replace all $\W\y + \b$ by $\y\W^\top + \b$).
+
+<h3 id="5"> 5. &ldquo;Training&rdquo; the MLP</h3>
+<p> We now know how to process an input $\x$ to get a classification output $\y$. But how do we ensure that the output is <i>correct</i>? To do so, we must <i>train</i> the network.
+<p> The network as a number of parameters : the weights $w^l_{ij}$ and the biases $\b^l$. The behavior of the network changes according to their value. &ldquo;Training&rdquo; the network is the business of <i>learning</i> these values, such that the network performs it tasks correct. E.g., for a hand-written digit classification network, training would be the job of finding the weights and biases of the network, such that when the network is presented with an image of a digit, the output $\y$ correctly assigns the maximum probability to the correct digit. 
+<p> The actual training process is an iterative process, in which we begin with initial estimates for all the parameters (which may be randomly set). These estimates are then iteratively refined such that the network outputs (mostly) correct answers to a set of &ldquo;training&rdquo; instances for which the answers are known. We explain this in a little more detail below.
+
+<p> Before we do so, let us introduce the notation we will use below.
+<ul>
+<li> We will represent <i>training instances</i> as $(\x, \d)$. See the next section for an explanation of what $\x$ and $\d$ represent.
+<li> Given a <i>set</i> of training instances, we will represent individual instances in it as $(\x^j, \d^j)$.
+<li> $\x$ and $\d$ in each training instance are actually vectors. We will represent the $i^{\rm th}$ component of these vectors as $x_i$ and $d_i$.
+<li> Given a set of training instances, we represent the $i^{\rm th}$ component of the $j^{\rm th}$ instance as $x^j_i$ and $d^j_i$.
+<li> We will represent the output of a network in response to $\x^j$ from the $j^{\rm th}$ training instance as $\y^j$.  We will represent its $i^{\rm th}$ component as $y^j_i$.
+</ul>
+<h4 id="5.1"> 5.1. The &ldquo;training data&rdquo;</h4>
+<p> We will train the network using a collection of <i>training data</i>. The training data consists of a large collection of $(\x,\d)$ pairs, where $\x$ is an input data instance, and $\d$ is the actual class label for that instance (expressed as a one-hot vector).  The $\x$ represents the <i>numeric input data</i> (sometimes called the &ldquo;features&rdquo;) of the instance that would be presented to the network. $\d$ is the <i>desired</i> output of the network -- what you want the network to ideally output when presented with this training instance.
+For instance, a training instance may comprise an image of the digit 3, along with a (one-hot representation of its) class.  Ideally, if the network is presented with the $\x$ from the training instance, the output $\y$ must exactly be equal to the $\d$ for that instance. Training tries to make this happen.
+<p> These training data are assumed to be similar to the <i>test</i> data that will be encountered when the network is being used operationally.
+<h4 id="5.2"> 5.2. The &ldquo;loss&rdquo;</h4>
+<p> The actual training procedure is iterative.  It starts with an initial guess $w_{ij}^{l,(0)}$, $b_i^{l,(0)}$ (where the second superscript $(0)$ indicates that this is the initial estimate). When the $\x$ from any training instance $(\x,\d)$ is processed by the network, it outputs a $\y$ from it. Ideally this $\y$ must be equal to $\d$.  In practice, the two will not be the same, particularly in the initial stages of training. There will be a discrepancy between the <i>desired</i> output $\d$ and the <i>actual</i> output, $\y$. Training attempts to minimize this discrepancy for <i>all</i> training instances.
+
+<p>In order to do so, we will need to quantify the discrepancy. This is generally done through a <i>divergence</i> function $\div(\y,\d)$ which has the following properties:  
+<ul>
+<li>$\div(\y,\d)$ is a scalar real number, i.e. $\div(\y,\d) \in \mathbb{R}$.
+<li>$\div(\y,\d) \gt 0$ for all $\y \neq \d$,  and 
+<li> $\div(\y,\d) = 0$ if $\y = \d$.
+</ul>
+
+<p> A number of divergence functions have been defined in the literature. The two that find the most use in deep learning are the following.
+<ul>
+</ul>
+ $L_2$ divergence, and the $KL$ divergence, which are defined as follows.
+<ul>
+<li> <b>$L_2$ divergence:</b> The $L_2$ divergence is most used when the neural network is attempting to predict real-valued vectors, i.e. $\d \in \mathbb{R}^M$. This would happen if, for instance, the network is predicting vectors of stock-market values, or the spectrum of an audio signal, or an image. The output $\y$ too will be a vector of real-valued numbers.  The divergence is defined as
+\[
+\div(\y,\d) = \|\y - \d\|^2_2 = \sum_{i=1}^M (y_i - d_i)^2
+\] 
+where $y_i$ and $d_i$ are the $i^{\rm th}$  components of the actual and desired outputs of the network.
+<li> <b>$KL$ divergence:</b> The KL divergence is used for classification problems.  The desired output $\d$ is a one-hot vector that can also be viewed as being a probability distribution that assigns a probability of 1.0 to the correct class and 0 to other classes.  The network output $\y$ is a probability distribution over classes. The divergence between the two is defined as
+\[
+\div(\y,\d) = \sum_{i=1}^M d_i \log \frac{d_i}{y_i} = \sum_i d_i \log d_i - \sum_i d_i \log y_i
+\]
+Since $\d$ is one hot, where only one component is 1, and the rest are 0, only one of the terms in the summation has a non-zero multiplier, so this reduces to
+\[
+\div(\y, \d) = -\log y_c
+\]
+where $y_c$ is the probability assigned to the correct class by the network.
+<p> A variant of the $KL$ divergence is the <i>cross-entropy loss</i>, which is defined simply as $\div(\y, \d) = -\sum_i d_i \log y_i$, which is the same as the KL divergence except for the $\sum_i d_i \log d_i$. When $\d$ is a one-hot vector, the KL divergence is identical to the cross-entropy loss, since $\sum_i d_i \log d_i = 0$.
+</ul>
+<p> When training, we will have a <i>collection</i> of training instances. We will try to learn the neural network model parameters to minimize the divergence between the network output and desired outputs for all of them.
+<p> Let $\mathcal{Tr}$ represent the set of training instances, i.e. $\mathcal{Tr} = \{(\x_1, \d_1),\,(\x_2, \d_2),\cdots,(\x_T, \d_T)\}$, where $T$ is the total number of training instances.
+<p> We define a <i>Loss</i> that quantifies the average divergence over all training instances as
+\[
+Loss = \frac{1}{T}\sum_{i=1}^T \div(\y_i, \d_i)
+\] 
+where, as clarified earlier, $\y_i$ is the network response to input $\x_i$.
+<p> The network parameters are trained to minimize this loss. The assumption is that if the network can be tuned to correctly predict the desired output for the instances in the training data, it will also do so for other instances outside it.
+<h4 id="5.3"> 5.3. Minimizing the loss through gradient descent</h4>
+<p> The training philosophy we will use is as follows. Given our current estimate for the parameters, we will compute the discrepancy between the network output and the desired output, as quantified by the loss.  Then, for each parameter (weight and bias) we will test how it influences the loss -- whether increasing that parameter increases the loss or decreases it. If increasing the parameter decreases the loss, we will increase the parameter. If increasing the parameter <i>increases</i> the loss, we will decrease it.
+<p> The influence of a parameter $w$ (or $b$) on the loss is given by the derivative $\frac{d Loss}{d w}$. The derivative literally computes how much the loss increases ($d Loss$), in response to a small increment of $w$ ($dw$). 
+<ul>
+<li> The <i>sign</i> of the derivative indicates the direction of change of the loss, in response to a small increment of $w$. If the derivative is positive, increasing $w$ increases the loss. If it is negative, incrementing $w$ results in a negative increment, or decrease, of the loss. (When it is 0, small changes of $w$ no longer affect the loss). 
+<li> The <i>magnitude</i> of the effect of a minor increment of $w$ on the loss is given by the magnitude of the derivative.
+</ul>
+<p> This leads to the following update rule for any parameter $w$: 
+\[
+w \longleftarrow w - \eta \frac{d Loss}{d w}
+\]
+<p>The parameter is adjusted in the direction of decreasing loss. $\eta$ is a step size parameter, sometimes also called a &ldquo;learning rate&rdquo;. The update rule above is itself an instance of the <i>gradient descent</i> update rule.
+
+<p> We will use the gradient descent update rule to update every parameter -- every weight $w_{ij}^l$ and every bias $b_i^l$ in the network. In the $k^{\rm th}$ iteration of the update, the update operation performed
+<div class="box">
+<p> for $l$ = 1:$L$
+<p style="margin-left: 40px">   for $i$ = 1:$N_l$
+<p style="margin-left: 80px">    for $j$ = 1:$N_{l-1}$
+<p style="margin-left: 120px">   $w_{ij}^{l,(k)} =  w_{ij}^{l,(k-1)} - \eta \frac{d Loss}{d w_{ij}^l}$
+<p style="margin-left: 80px">    end
+<p style="margin-left: 80px">    $b_{i}^{l,(k)} =  b_{i}^{l,(k-1)} - \eta \frac{d Loss}{d b_{i}^l}$
+<p style="margin-left: 40px">    end
+<p> end
+</div>
+where the superscript $(k)$ represents the estimate obtained in the $k^{\rm th}$ iteration.
+
+<h4 id="5.4"> 5.4. Computing the derivatives for gradient descent </h4>
+<p> The key component of the above procedure is the derivatives $\frac{d Loss}{d w}$ (or $\frac{d Loss}{db}$), which quantify how the discrepancy between the current network output and desired output changes with parameter value.
+<p> In order to compute the derivatives, two steps are required:
+<ol>
+<li> Compute the divergence (discrepancy) between the actual and desired outputs of the network, given the <i>current</i> parmeter estimates.
+<li> Compute the derivatives w.r.t the parameters (which quantifies how this divergence (discrepancy) changes for small increments of parameter values).
+</ol>
+<p> The two steps above are called the &ldquo;forward pass&rdquo; and &ldquo;backward pass&rdquo; respectively.
+<h5 id="5.4.1"> 5.4.1. The forward pass</h5>
+<p> In the forward each each training instance $\x_i$ is passed through the network to obtain the output $\y_i$. 
+<p> The divergence $div(\y_i, \d_i)$ is computed from $\d_i$ and the obtained $\y_i$.
+<h5 id="5.4.2"> 5.4.2. The backward pass</h5>
+<p> In the backward pass, for each training instance, we compute <i>backward</i> from the output layer of the network to the input layer, computing $\frac{d div(\y, \d)}{d w_{ij}^l}$ and $\frac{d div(\y, \d)}{d b_{i}^l}$ as we move along backwards.
+<p> We will skip the details of the backward pass for now, other than to note the computation results in the above-mentioned derivatives.  The overall derivatives are computed as
+\[
+\frac{d Loss}{d w_{ij}^l} = \frac{1}{T} \sum_{i=1}^T \frac{d div(\y_i, \d_i)}{d w_{ij}^l} \\
+\frac{d Loss}{d b_{i}^l} = \frac{1}{T} \sum_{i=1}^T \frac{d div(\y_i, \d_i)}{d b_{i}^l}
+\]
+<p> The computed derivatives are then inserted into the algorithm of Section <a href="#5.3">5.3</a> to obtain updates.
+<h4 id="5.5"> 5.5. Batches, mini-batches and SGD</h4>
+<p>  The net derivative computed in Section <a href="#5.4.2">5.4.2</a> is the average of the derivatives for all the training instances, implying that the forward and backward pass must be computed over the entire training data set before each update. In practice, this is inefficient and wasteful of computation.
+<p> Instead, we will partition the training data into <i>mini batches</i> of a small number of instances (typically between 16 and 1024).
+<p> We will compute the derivatives using the formulae from Section <a href="#5.4">5.4</a>, but over mini batches, instead. The parameter values are updated after each mini batch.
+<p> A single pass over the entire training data will result in many updates, one from each minibatch. If each minibatch is size $T_b$, then we will obtain $\frac{T}{T_b}$ updates per pass over the data. A single pass over the entire training data is referred to as an <i>epoch</i> in the jargon.
+<p> In order to ensure stable training, the minibatches are randomized, such that the minibatches in consecutive epochs are not identical. In addition, the learning rate $\eta$ is reduced, or <i>decayed</i>, with updates. A variety of decay schedules have been proposed in the literature.
+<ul>
+<li> Linear decay:
+\[
+\eta_k = \frac{1}{\beta k+1}\eta_0
+\]
+where $\eta_0$ is the initial learning rate (which is typically around 0.1), $\eta_k$ is the learning rate in the $k^{\rm th}$ epoch (pass through the entire training data), and $\beta$ is a decay rate, typically set to a value $\beta \leq 1$.
+<li> Exponential decay:
+\[
+\eta_k = \beta^k \eta_0
+\]
+$k$ is the epoch number and $\beta$ is a decay rate that is a number less than 1.
+<li> Staircase: Here the initial learning rate is held constant until the loss plateaus, then it is scaled down by a factor $\beta$. This is similar to exponential decay, except that the learning rate is not scaled down every epoch, but either after the loss plateaus with the current rate, or after a fixed number of updates.
+</ul>
+<p> Other such schedules have been proposed.
+<h4 id="5.6"> 5.6. Optimizers and other magic</h4>
+<p> In many problems, the simple gradient descent update rule of Section <a href="#5.3">5.3</a> will be too slow or get stuck in poor solutions. To prevent this, a variety of advanced methods, such as momentum based methods, Nestorov's metohd, and other second order methods such as RMSprop, ADAM, ADAGrad etc. have been proposed. We refer students to <a href="http://ruder.io/optimizing-gradient-descent/">this amazing blog by Sebastian Ruder</a> for an excellent description of these methods.
+<p>In fact, we highly encourage you to read Ruder's blog, as you will almost certainly be using some of these methods in your assignments. HW1, for instance, gets some of its best results using ADAM.
+<h3 id="6"> 6. Setting up for HW1 Part 1</h3>
+<p> -to be written-
+<h3 id="7"> 7. Setting up for HW1 Part 2</h3>
+<p> HW1P2 requires you to train a neural network for a real task: digit recognition.
+<p>-- To be written -- 
+Explain what is to be done in detail  (set up inputs, outputs, loss,  optmizer,  batch size,  run many epochs, watch loss converge,  run the net on test data, evaluate performance).
+
+</html>
