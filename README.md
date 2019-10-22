@@ -2,7 +2,7 @@
 Fall 2019 Website for 11-785, Introduction to Deep Learning
 
 ## To test the repository before updating the website, go to:
-jhkonan.github.io
+[jhkonan.github.io](jhkonan.github.io)
 
 ## To update the website:
 ```
