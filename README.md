@@ -1,4 +1,4 @@
-# 11-785 Website Maintinance
+# 11-785 Website Maintenance
 Fall 2019 Website for 11-785, Introduction to Deep Learning
 
 ## To test the repository before updating the website, go to:
