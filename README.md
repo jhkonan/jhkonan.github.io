@@ -1,4 +1,4 @@
-# jhkonan.github.io
+# 11-785 Website Maintinance
 Fall 2019 Website for 11-785, Introduction to Deep Learning
 
 ## To test the repository before updating the website, go to:
