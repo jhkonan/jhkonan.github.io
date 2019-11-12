@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--  <meta http-equiv="refresh" content="5"> -->
+    <title>11-785 Deep Learning</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-MfvZlkHCEqatNoGiOXveE8FIwMzZg4W85qfrfIFBfYc= sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,300italic' rel='stylesheet' type='text/css'>
+	
+	<!-- bootsraping for the tables -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	
+	<!-- the main css locally done-->
+    <link href="main_pd.css" rel="stylesheet" type="text/css">
+
+	<div class="container-titlebar">
+		<div class="row">
+			<div class="title-col vcenter" style="color:#A80000;font-weight:bold;text-align:center;width:100%">
+				<div class="title"><b>11-785</b> Introduction to Deep Learning</div>
+				<div class="subtitle"><i>Fall 2019</i></div>
+			</div>
+		</div>
+	</div>
+</head>
+<body>
+	
+	<div class="container">
+	<br> <h1 align="center">Poster Guidelines </h1>
+	<h2>What Dimension?</h2>
+		<p> The size of the poster should be <strong>40inches X 30inches</strong>.</p>
+	
+	<h2>Where to print?</h2>
+	<ul class="ul">
+	   <li>If you have an SCS account, you may use SCS poster printing. However, please be sure to read through their guidelines to avoid delays. <br> This service is only available to students with an SCS account. <a href="http://www.cs.cmu.edu/~help/printing/poster_printing.html">http://www.cs.cmu.edu/~help/printing/poster_printing.html</a> </li>
+	   <li>If you do not have a SCS account, please upload your poster to Canvas following the instructions that appear there.</li>
+	</ul>
+	
+	<h2>Where to submit?</h2>
+	<p> One pdf poster document per team should be submitted on Canvas on December 3rd by no later than 11:59pm.</p>
+	
+	
+	<h2>Presentation Date and Location</h2>
+		<p> **Poster Presentatons will be held in GHC7101 Atrium, on December (5th and 6th) or (6th, and 9th) from 2:00pm to 5:00pm</p>
+		<p><strong>**pending for confirmation </strong></p>
+	
+	<h2>Presentation Grading Rubric</h2>
+	<table class="table table-bordered">
+	<thead>
+		<tr>
+			 <th>Problem</th>
+			 <th>Proposed Methods</th>
+			 <th>Completeness</th>
+			 <th>Results</th>
+			 <th>Publish ability</th>
+		</tr>
+   </thead>
+   <tbody>
+		<tr>
+            <td align="left">Whether the problem description is clear? <br> Is the motivation strong? <br>Is the problem nontrivial?</td> <!--Assignment-->     		
+			<td align="left">Clear enough? Technically sound? Originality?</td>
+			<td align="left">Is your work complete? <br> Have you obtained results consistent with successful completion of the work? </td>
+			<td align="left">Are the results reasonable? <br> how do you set up their experiments? <br> Comparisons with others? Can you explain the results? <br> Have you looked into the results and gained some insights on DL models/algorithms?</td>
+			<td align="left">Is your work potentially publishable?</td>
+		</tr>
+		<tr>
+			<td align="center">10%</td>
+			<td align="center">10%</td>
+			<td align="center">10%</td>
+			<td align="center">10%</td>
+			<td align="center">10%</td>
+		</tr>
+    </tbody>
+    </table>
+
+	<h2>What to Include in Your Poster? </h2>
+	<p>Be creative, after all it is a presentation! You should be able to illustrate what your project can do. <br> Overall, your poster should be aligned with these recommendations: </p> <br>
+
+	<table class="table table-bordered">
+	<thead>
+		<tr>
+			 <th>key point</th>
+			 <th>Description</th>
+		</tr>
+   </thead>
+   <tbody>
+		<tr>
+            <td>Overall Clarity of poster</td> <!--Assignment-->     		
+			<td> Define clear sections in your poster.<br>
+				 It should present the key points of your work, up to where you got with it. <br> 
+				 Summarize ideas and consider using figures and tables to make it more illustrative as that will give a better sense of work done.
+			</td>
+		</tr>
+		<tr>
+			<td>Introduction</td>
+			<td>What are you trying to solve? Why is it important in the field?</td>
+		</tr>
+		<tr>
+			<td>Related work</td>
+			<td>Previous work related to your topic that served as a baseline or motivation. <br> This would serve as your backup support in what you have developed.</td>
+		</tr>
+		<tr>
+			<td>Methods</td>
+			<td>Which techniques did you apply? <br> You are strongly encouraged to add an illustration of your Machine Learning pipeline. <br>(suggested: figures)</td>
+		</tr>
+		<tr>
+			<td>Dataset</td>
+			<td>Description of the dataset used, number of files, train and test partitions, labels, etc. <br> (suggested: tables)</td>
+		</tr>
+		<tr>
+			<td>Results</td>
+			<td>Your experimental results.<br> What metrics did you use for evaluation? <br> How do your results compare to prior work or your baseline? </td>
+		</tr>
+		<tr>
+			<td>Conclusions</td>
+			<td>summary analysis of your model and results.<br> Describe current results in each of the experiments aligned with your expectations. <br> Highlight a few limitations of your approach <br>(e.g., strong assumptions you had to make, constraints, when your method didn’t work in practice, etc.). </td>
+		</tr>
+		<tr>
+			<td>References</td>
+			<td>Add the most relevant citations only</td>
+		</tr>
+    </tbody>
+    </table> 
+	</div>   <!-- container div -->
+</body>
+</html>
+
+
+
+
+
+
+
+ 

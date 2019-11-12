@@ -1,0 +1,47 @@
+body {
+        font-family: 'Open Sans', sans-serif;
+        font-size: 1.5em;
+        font-weight: 300;
+        text-align: justify;
+    }
+
+	
+h1{
+	color: #b05145;
+  }	
+
+
+ h2 {
+      color: #b05145;
+    }
+
+
+h3 {
+     color: #bf766d;
+     font-weight: 300;
+   }
+
+   
+	.container {
+            max-width: 1200px;
+            padding-left: 25px;
+            padding-right: 25px;
+           }
+
+		   
+a, a:hover {
+            color: #b05145;
+        }
+
+
+  .ul {
+            list-style:square ;
+            padding-left: 1.3em;
+        }
+   li{
+	   margin-bottom: 0.5em;
+    }
+	
+
+	
+	
