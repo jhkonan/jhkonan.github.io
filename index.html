@@ -1,0 +1,365 @@
+<div id="modeSelector" style="margin-bottom:10px; font-family:sans-serif;">
+  <label style="margin-right:8px;">
+    <input type="radio" name="modeGroup" id="typeModeRadio" value="type" checked>
+    Type Mode
+  </label>
+  <label>
+    <input type="radio" name="modeGroup" id="learnModeRadio" value="learn">
+    Learn Mode
+  </label>
+</div>
+
+<div id="myIpaChart" style="width:1100px; height:600px; border:1px solid #000;"></div>
+
+<!-- Typed Log Area (Type Mode) -->
+<div id="typedLogArea" style="display:block; margin-top:10px; font-family:sans-serif;">
+  <textarea id="typedLog" rows="3" cols="60" style="font-size:16px;"></textarea><br>
+  <button id="clearBtn" style="margin-right:10px;">Clear</button>
+  <button id="copyBtn">Copy</button>
+</div>
+
+<!-- Learn Mode Controls -->
+<div id="learnControls" style="display:none; font-family:sans-serif; margin-top:10px;">
+  <div style="margin-bottom:8px;">
+    <span id="questionStatus" style="font-size:16px; margin-right:20px;"></span>
+    <button id="nextSoundBtn" style="margin-right:10px;">Next Sound</button>
+    <button id="replayBtn" style="margin-right:10px;">Replay Sound</button>
+    <button id="showAnswerBtn" style="margin-right:10px;">Show Answer</button>
+    <button id="resetScoreBtn" style="margin-right:10px;">Reset Score</button>
+  </div>
+  <div id="feedbackMsg" style="font-size:16px; margin-bottom:8px;"></div>
+  <div id="scoreDisplay" style="font-size:16px;"></div>
+  <div id="sessionSummary" style="display:none; margin-top:10px; font-size:16px;"></div>
+  <button id="newSessionBtn" style="display:none; margin-top:10px;">Start New Session</button>
+</div>
+
+<audio id="audioPlayer" src=""></audio>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+  // Parse the Plotly figure JSON and build the audio map.
+  var figData = {"data":[{"customdata":["p","b",null,null,"t",null,null,"d",null,null,"ʈ","ɖ","c","ɟ","k","g","q","ɢ",null,null,"ʔ",null,null,"m",null,"ɱ",null,null,null,"n",null,null,null,"ɳ",null,"ɲ",null,"ŋ",null,"ɴ",null,null,null,null,null,"ʙ",null,null,null,null,null,"r",null,null,null,null,null,null,null,null,null,"ʀ",null,null,null,null,null,null,null,"ⱱ",null,null,null,"ɾ",null,null,null,"ɽ",null,null,null,null,null,null,null,null,null,null,"ɸ","β","f","v","θ","ð","s","z","ʃ","ʒ","ʂ","ʐ","ç","ʝ","x","ɣ","χ","ʁ","ħ","ʕ","h","ɦ",null,null,null,null,"ɬ",null,null,"ɮ",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"ʋ",null,null,null,"ɹ",null,null,null,"ɻ",null,"j",null,"ɰ",null,null,null,null,null,null,null,null,null,null,null,null,null,"l",null,null,null,"ɭ",null,"ʎ",null,"ʟ",null,null,null,null,null,null],"hoverinfo":"text","hovertext":["Voiceless Bilabial Plosive","Voiced Bilabial Plosive",null,null,"Voiceless Alveolar Plosive",null,null,"Voiced Alveolar Plosive",null,null,"Voiceless Retroflex Plosive","Voiced Retroflex Plosive","Voiceless Palatal Plosive","Voiced Palatal Plosive","Voiceless Velar Plosive","Voiced Velar Plosive","Voiceless Uvular Plosive","Voiced Uvular Plosive",null,null,"Glottal Stop",null,null,"Bilabial Nasal",null,"Labiodental Nasal",null,null,null,"Alveolar Nasal",null,null,null,"Retroflex Nasal",null,"Palatal Nasal",null,"Velar Nasal",null,"Uvular Nasal",null,null,null,null,null,"Bilabial Trill",null,null,null,null,null,"Alveolar Trill",null,null,null,null,null,null,null,null,null,"Uvular Trill",null,null,null,null,null,null,null,"Labiodental Flap",null,null,null,"Alveolar Tap",null,null,null,"Retroflex Flap",null,null,null,null,null,null,null,null,null,null,"Voiceless Bilabial Fricative","Voiced Bilabial Fricative","Voiceless Labiodental Fricative","Voiced Labiodental Fricative","Voiceless Dental Fricative","Voiced Dental Fricative","Voiceless Alveolar Fricative","Voiced Alveolar Fricative",null,"Voiced Post-Alveolar Fricative","Voiceless Retroflex Fricative","Voiced Retroflex Fricative","Voiceless Palatal Fricative","Voiced Palatal Fricative","Voiceless Velar Fricative","Voiced Velar Fricative","Voiceless Uvular Fricative","Voiced Uvular Fricative","Voiceless Pharyngeal Fricative","Voiced Pharyngeal Fricative","Voiceless Glottal Fricative","Voiced Glottal Fricative",null,null,null,null,"Voiceless Alveolar Lateral Fricative",null,null,"Voiced Alveolar Lateral Fricative",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"Labiodental Approximant",null,null,null,"Alveolar Approximant",null,null,null,"Retroflex Approximant",null,"Palatal Approximant",null,"Voiced Velar Approximant",null,null,null,null,null,null,null,null,null,null,null,null,null,"Alveolar Lateral Approximant",null,null,null,"Retroflex Lateral Approximant",null,"Palatal Lateral Approximant",null,"Velar Lateral Approximant",null,null,null,null,null,null],"mode":"text","text":["p","b","","","t","","","d","","","ʈ","ɖ","c","ɟ","k","g","q","ɢ","","","ʔ","","","m","","ɱ","","","","n","","","","ɳ","","ɲ","","ŋ","","ɴ","","","","","","ʙ","","","","","","r","","","","","","","","","","ʀ","","","","","","","","ⱱ","","","","ɾ","","","","ɽ","","","","","","","","","","","ɸ","β","f","v","θ","ð","s","z","ʃ","ʒ","ʂ","ʐ","ç","ʝ","x","ɣ","χ","ʁ","ħ","ʕ","h","ɦ","","","","","ɬ","","","ɮ","","","","","","","","","","","","","","","","","","ʋ","","","","ɹ","","","","ɻ","","j","","ɰ","","","","","","","","","","","","","","l","","","","ɭ","","ʎ","","ʟ","","","","","",""],"textfont":{"size":18},"textposition":"middle center","x":[0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5,0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5,10.5,11.5,12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5],"y":[7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,7.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,6.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,5.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,4.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,3.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,2.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5],"type":"scatter"}],"layout":{"annotations":[{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Plosive","x":-6,"xanchor":"left","y":7.5,"yanchor":"middle"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Nasal","x":-6,"xanchor":"left","y":6.5,"yanchor":"middle"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Trill","x":-6,"xanchor":"left","y":5.5,"yanchor":"middle"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Tap or Flap","x":-6,"xanchor":"left","y":4.5,"yanchor":"middle"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Fricative","x":-6,"xanchor":"left","y":3.5,"yanchor":"middle"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Lateral Fricative","x":-6,"xanchor":"left","y":2.5,"yanchor":"middle"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Approximant","x":-6,"xanchor":"left","y":1.5,"yanchor":"middle"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Lateral Approximant","x":-6,"xanchor":"left","y":0.5,"yanchor":"middle"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Bilabial","textangle":0,"x":0,"xanchor":"left","y":8.2,"yanchor":"bottom"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Labio-\u003cbr\u003edental","textangle":0,"x":2,"xanchor":"left","y":8.2,"yanchor":"bottom"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Dental","textangle":0,"x":4,"xanchor":"left","y":8.2,"yanchor":"bottom"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Alveolar","textangle":0,"x":6,"xanchor":"left","y":8.2,"yanchor":"bottom"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Post\u003cbr\u003eAlveolar","textangle":0,"x":8,"xanchor":"left","y":8.2,"yanchor":"bottom"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Retro-\u003cbr\u003eflex","textangle":0,"x":10,"xanchor":"left","y":8.2,"yanchor":"bottom"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Palatal","textangle":0,"x":12,"xanchor":"left","y":8.2,"yanchor":"bottom"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Velar","textangle":0,"x":14,"xanchor":"left","y":8.2,"yanchor":"bottom"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Uvular","textangle":0,"x":16,"xanchor":"left","y":8.2,"yanchor":"bottom"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Phar-\u003cbr\u003eyngeal","textangle":0,"x":18,"xanchor":"left","y":8.2,"yanchor":"bottom"},{"align":"left","font":{"color":"blue","size":14},"showarrow":false,"text":"Glottal","textangle":0,"x":20,"xanchor":"left","y":8.2,"yanchor":"bottom"}],"height":600,"margin":{"b":100,"l":0,"r":50,"t":50},"shapes":[{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":-0.1,"x1":1.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":0.9,"x1":2.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":1.9,"x1":3.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":2.9,"x1":4.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":3.9,"x1":5.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":4.9,"x1":6.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":5.9,"x1":7.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":6.9,"x1":8.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":7.9,"x1":9.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":8.9,"x1":10.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":9.9,"x1":11.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":10.9,"x1":12.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":11.9,"x1":13.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":12.9,"x1":14.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":13.9,"x1":15.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":14.9,"x1":16.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":15.9,"x1":17.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":16.9,"x1":18.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":17.9,"x1":19.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":18.9,"x1":20.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":19.9,"x1":21.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":20.9,"x1":22.1,"y0":6.9,"y1":8.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":-0.1,"x1":1.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":0.9,"x1":2.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":1.9,"x1":3.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":2.9,"x1":4.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":3.9,"x1":5.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":4.9,"x1":6.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":5.9,"x1":7.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":6.9,"x1":8.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":7.9,"x1":9.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":8.9,"x1":10.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":9.9,"x1":11.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":10.9,"x1":12.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":11.9,"x1":13.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":12.9,"x1":14.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":13.9,"x1":15.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":14.9,"x1":16.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":15.9,"x1":17.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":16.9,"x1":18.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":17.9,"x1":19.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":18.9,"x1":20.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":19.9,"x1":21.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":20.9,"x1":22.1,"y0":5.9,"y1":7.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":-0.1,"x1":1.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":0.9,"x1":2.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":1.9,"x1":3.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":2.9,"x1":4.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":3.9,"x1":5.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":4.9,"x1":6.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":5.9,"x1":7.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":6.9,"x1":8.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":7.9,"x1":9.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":8.9,"x1":10.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":9.9,"x1":11.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":10.9,"x1":12.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":11.9,"x1":13.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":12.9,"x1":14.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":13.9,"x1":15.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":14.9,"x1":16.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":15.9,"x1":17.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":16.9,"x1":18.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":17.9,"x1":19.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":18.9,"x1":20.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":19.9,"x1":21.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":20.9,"x1":22.1,"y0":4.9,"y1":6.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":-0.1,"x1":1.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":0.9,"x1":2.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":1.9,"x1":3.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":2.9,"x1":4.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":3.9,"x1":5.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":4.9,"x1":6.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":5.9,"x1":7.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":6.9,"x1":8.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":7.9,"x1":9.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":8.9,"x1":10.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":9.9,"x1":11.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":10.9,"x1":12.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":11.9,"x1":13.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":12.9,"x1":14.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":13.9,"x1":15.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":14.9,"x1":16.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":15.9,"x1":17.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":16.9,"x1":18.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":17.9,"x1":19.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":18.9,"x1":20.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":19.9,"x1":21.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":20.9,"x1":22.1,"y0":3.9,"y1":5.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":-0.1,"x1":1.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":0.9,"x1":2.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":1.9,"x1":3.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":2.9,"x1":4.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":3.9,"x1":5.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":4.9,"x1":6.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":5.9,"x1":7.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":6.9,"x1":8.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":7.9,"x1":9.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":8.9,"x1":10.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":9.9,"x1":11.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":10.9,"x1":12.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":11.9,"x1":13.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":12.9,"x1":14.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":13.9,"x1":15.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":14.9,"x1":16.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":15.9,"x1":17.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":16.9,"x1":18.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":17.9,"x1":19.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":18.9,"x1":20.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":19.9,"x1":21.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":20.9,"x1":22.1,"y0":2.9,"y1":4.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":-0.1,"x1":1.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":0.9,"x1":2.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":1.9,"x1":3.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":2.9,"x1":4.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":3.9,"x1":5.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":4.9,"x1":6.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":5.9,"x1":7.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":6.9,"x1":8.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":7.9,"x1":9.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":8.9,"x1":10.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":9.9,"x1":11.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":10.9,"x1":12.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":11.9,"x1":13.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":12.9,"x1":14.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":13.9,"x1":15.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":14.9,"x1":16.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":15.9,"x1":17.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":16.9,"x1":18.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":17.9,"x1":19.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":18.9,"x1":20.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":19.9,"x1":21.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":20.9,"x1":22.1,"y0":1.9,"y1":3.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":-0.1,"x1":1.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":0.9,"x1":2.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":1.9,"x1":3.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":2.9,"x1":4.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":3.9,"x1":5.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":4.9,"x1":6.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":5.9,"x1":7.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":6.9,"x1":8.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":7.9,"x1":9.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":8.9,"x1":10.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":9.9,"x1":11.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":10.9,"x1":12.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":11.9,"x1":13.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":12.9,"x1":14.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":13.9,"x1":15.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":14.9,"x1":16.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":15.9,"x1":17.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":16.9,"x1":18.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":17.9,"x1":19.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":18.9,"x1":20.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":19.9,"x1":21.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":20.9,"x1":22.1,"y0":0.9,"y1":2.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":-0.1,"x1":1.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":0.9,"x1":2.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":1.9,"x1":3.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":2.9,"x1":4.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":3.9,"x1":5.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":4.9,"x1":6.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":5.9,"x1":7.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":6.9,"x1":8.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":7.9,"x1":9.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":8.9,"x1":10.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":9.9,"x1":11.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":10.9,"x1":12.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":11.9,"x1":13.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":12.9,"x1":14.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":13.9,"x1":15.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgreen","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":14.9,"x1":16.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":15.9,"x1":17.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":16.9,"x1":18.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":17.9,"x1":19.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":18.9,"x1":20.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":19.9,"x1":21.1,"y0":-0.1,"y1":1.1},{"fillcolor":"lightgrey","layer":"below","line":{"color":"black","width":1},"type":"rect","x0":20.9,"x1":22.1,"y0":-0.1,"y1":1.1},{"layer":"above","line":{"color":"black","width":3},"type":"line","x0":1.9,"x1":1.9,"y0":0,"y1":9.6},{"layer":"above","line":{"color":"black","width":3},"type":"line","x0":3.9,"x1":3.9,"y0":0,"y1":9.6},{"layer":"above","line":{"color":"black","width":3},"type":"line","x0":5.9,"x1":5.9,"y0":0,"y1":9.6},{"layer":"above","line":{"color":"black","width":3},"type":"line","x0":7.9,"x1":7.9,"y0":0,"y1":9.6},{"layer":"above","line":{"color":"black","width":3},"type":"line","x0":9.9,"x1":9.9,"y0":0,"y1":9.6},{"layer":"above","line":{"color":"black","width":3},"type":"line","x0":11.9,"x1":11.9,"y0":0,"y1":9.6},{"layer":"above","line":{"color":"black","width":3},"type":"line","x0":13.9,"x1":13.9,"y0":0,"y1":9.6},{"layer":"above","line":{"color":"black","width":3},"type":"line","x0":15.9,"x1":15.9,"y0":0,"y1":9.6},{"layer":"above","line":{"color":"black","width":3},"type":"line","x0":17.9,"x1":17.9,"y0":0,"y1":9.6},{"layer":"above","line":{"color":"black","width":3},"type":"line","x0":19.9,"x1":19.9,"y0":0,"y1":9.6}],"title":{"text":"Interactive IPA – Pulmonic Consonant Chart"},"width":1100,"xaxis":{"range":[-7,23],"scaleanchor":"y","showgrid":false,"showline":false,"tickvals":[],"zeroline":false},"yaxis":{"range":[-1,10],"scaleratio":1,"showgrid":false,"showline":false,"tickvals":[],"zeroline":false},"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}}}};
+  var audioMap = {
+    "ʟ": "https://www.ipachart.com/ogg/Velar_lateral_approximant.ogg",
+  "ʎ": "https://www.ipachart.com/ogg/Palatal_lateral_approximant.ogg",
+  "ɭ": "https://www.ipachart.com/ogg/Retroflex_lateral_approximant.ogg",
+  "l": "https://www.ipachart.com/ogg/Alveolar_lateral_approximant.ogg",
+  "ɰ": "https://www.ipachart.com/ogg/Voiced_velar_approximant.ogg",
+  "j": "https://www.ipachart.com/ogg/Palatal_approximant.ogg",
+  "ɻ": "https://www.ipachart.com/ogg/Retroflex_approximant.ogg",
+  "ɹ": "https://www.ipachart.com/ogg/Alveolar_approximant.ogg",
+  "ʋ": "https://www.ipachart.com/ogg/Labiodental_approximant.ogg",
+  "ɮ": "https://www.ipachart.com/ogg/Voiced_alveolar_lateral_fricative.ogg",
+  "ɬ": "https://www.ipachart.com/ogg/Voiceless_alveolar_lateral_fricative.ogg",
+  "ɽ": "https://www.ipachart.com/ogg/Retroflex_flap.ogg",
+  "ɾ": "https://www.ipachart.com/ogg/Alveolar_tap.ogg",
+  "ⱱ": "https://www.ipachart.com/ogg/Labiodental_flap.ogg",
+  "ɦ": "https://www.ipachart.com/ogg/Voiced_glottal_fricative.ogg",
+  "h": "https://www.ipachart.com/ogg/Voiceless_glottal_fricative.ogg",
+  "ʕ": "https://www.ipachart.com/ogg/Voiced_pharyngeal_fricative.ogg",
+  "ħ": "https://www.ipachart.com/ogg/Voiceless_pharyngeal_fricative.ogg",
+  "ʁ": "https://www.ipachart.com/ogg/Voiced_uvular_fricative.ogg",
+  "χ": "https://www.ipachart.com/ogg/Voiceless_uvular_fricative.ogg",
+  "ɣ": "https://www.ipachart.com/ogg/Voiced_velar_fricative.ogg",
+  "x": "https://www.ipachart.com/ogg/Voiceless_velar_fricative.ogg",
+  "ʝ": "https://www.ipachart.com/ogg/Voiced_palatal_fricative.ogg",
+  "ç": "https://www.ipachart.com/ogg/Voiceless_palatal_fricative.ogg",
+  "ʐ": "https://www.ipachart.com/ogg/Voiced_retroflex_fricative.ogg",
+  "ʂ": "https://www.ipachart.com/ogg/Voiceless_retroflex_fricative.ogg",
+  "ʒ": "https://www.ipachart.com/ogg/Voiced_postalveolar_fricative.ogg",
+  "z": "https://www.ipachart.com/ogg/Voiced_alveolar_fricative.ogg",
+  "s": "https://www.ipachart.com/ogg/Voiceless_alveolar_fricative.ogg",
+  "ð": "https://www.ipachart.com/ogg/Voiced_dental_fricative.ogg",
+  "θ": "https://www.ipachart.com/ogg/Voiceless_dental_fricative.ogg",
+  "v": "https://www.ipachart.com/ogg/Voiced_labiodental_fricative.ogg",
+  "f": "https://www.ipachart.com/ogg/Voiceless_labiodental_fricative.ogg",
+  "β": "https://www.ipachart.com/ogg/Voiced_bilabial_fricative.ogg",
+  "ɸ": "https://www.ipachart.com/ogg/Voiceless_bilabial_fricative.ogg",
+  "ʀ": "https://www.ipachart.com/ogg/Uvular_trill.ogg",
+  "r": "https://www.ipachart.com/ogg/Alveolar_trill.ogg",
+  "ʙ": "https://www.ipachart.com/ogg/Bilabial_trill.ogg",
+  "ɴ": "https://www.ipachart.com/ogg/Uvular_nasal.ogg",
+  "ŋ": "https://www.ipachart.com/ogg/Velar_nasal.ogg",
+  "ɲ": "https://www.ipachart.com/ogg/Palatal_nasal.ogg",
+  "ɳ": "https://www.ipachart.com/ogg/Retroflex_nasal.ogg",
+  "n": "https://www.ipachart.com/ogg/Alveolar_nasal.ogg",
+  "ɱ": "https://www.ipachart.com/ogg/Labiodental_nasal.ogg",
+  "m": "https://www.ipachart.com/ogg/Bilabial_nasal.ogg",
+  "ʔ": "https://www.ipachart.com/ogg/Glottal_stop.ogg",
+  "ɢ": "https://www.ipachart.com/ogg/Voiced_uvular_plosive.ogg",
+  "q": "https://www.ipachart.com/ogg/Voiceless_uvular_plosive.ogg",
+  "g": "https://www.ipachart.com/ogg/Voiced_velar_plosive.ogg",
+  "k": "https://www.ipachart.com/ogg/Voiceless_velar_plosive.ogg",
+  "ɟ": "https://www.ipachart.com/ogg/Voiced_palatal_plosive.ogg",
+  "c": "https://www.ipachart.com/ogg/Voiceless_palatal_plosive.ogg",
+  "ɖ": "https://www.ipachart.com/ogg/Voiced_retroflex_plosive.ogg",
+  "ʈ": "https://www.ipachart.com/ogg/Voiceless_retroflex_plosive.ogg",
+  "d": "https://www.ipachart.com/ogg/Voiced_alveolar_plosive.ogg",
+  "t": "https://www.ipachart.com/ogg/Voiceless_alveolar_plosive.ogg",
+  "b": "https://www.ipachart.com/ogg/Voiced_bilabial_plosive.ogg",
+  "p": "https://www.ipachart.com/ogg/Voiceless_bilabial_plosive.ogg"
+  };
+
+  // Get references to mode toggle and control elements.
+  var typeModeRadio  = document.getElementById("typeModeRadio");
+  var learnModeRadio = document.getElementById("learnModeRadio");
+  var typedLogArea   = document.getElementById("typedLogArea");
+  var typedLog       = document.getElementById("typedLog");
+  var learnControls  = document.getElementById("learnControls");
+
+  // Get references to Learn Mode control elements.
+  var nextSoundBtn   = document.getElementById("nextSoundBtn");
+  var replayBtn      = document.getElementById("replayBtn");
+  var showAnswerBtn  = document.getElementById("showAnswerBtn");
+  var resetScoreBtn  = document.getElementById("resetScoreBtn");
+  var questionStatus = document.getElementById("questionStatus");
+  var feedbackMsg    = document.getElementById("feedbackMsg");
+  var scoreDisplay   = document.getElementById("scoreDisplay");
+  var sessionSummary = document.getElementById("sessionSummary");
+  var newSessionBtn  = document.getElementById("newSessionBtn");
+
+  var audioEl = document.getElementById("audioPlayer");
+
+  // Plot the IPA chart.
+  Plotly.newPlot("myIpaChart", figData.data, figData.layout);
+  var chartDiv = document.getElementById("myIpaChart");
+
+  // ----------------------------
+  // Session variables for Learn Mode.
+  // ----------------------------
+  function getPossibleSymbols() {
+      var symbols = [];
+      for (var i = 0; i < chartDiv.data[0].customdata.length; i++) {
+          var sym = chartDiv.data[0].customdata[i];
+          if (sym && audioMap[sym] && symbols.indexOf(sym) === -1) {
+              symbols.push(sym);
+          }
+      }
+      return symbols;
+  }
+
+  var possibleSymbols = getPossibleSymbols();
+  var remainingSymbols = possibleSymbols.slice();
+  var totalQuestions = possibleSymbols.length;
+  var currentQuestion = 0;
+  var totalAttempts = 0;
+  var totalCorrect = 0;
+  var missedSymbols = [];
+  var currentTarget = null;
+  var roundActive = false;
+
+  // Default mode is "type".
+  var currentMode = "type";
+
+  // Mode switching functions.
+  function switchToTypeMode() {
+      currentMode = "type";
+      typedLogArea.style.display = "block";
+      learnControls.style.display = "none";
+      feedbackMsg.innerText = "";
+      currentTarget = null;
+  }
+
+  function switchToLearnMode() {
+      currentMode = "learn";
+      typedLogArea.style.display = "none";
+      learnControls.style.display = "block";
+      feedbackMsg.innerText = "Press 'Next Sound' to begin.";
+      possibleSymbols = getPossibleSymbols();
+      remainingSymbols = possibleSymbols.slice();
+      totalQuestions = possibleSymbols.length;
+      currentQuestion = 0;
+      totalAttempts = 0;
+      totalCorrect = 0;
+      missedSymbols = [];
+      updateQuestionStatus();
+      updateScoreDisplay();
+      sessionSummary.style.display = "none";
+      newSessionBtn.style.display = "none";
+  }
+
+  typeModeRadio.addEventListener("click", switchToTypeMode);
+  learnModeRadio.addEventListener("click", switchToLearnMode);
+
+  // ----------------------------
+  // Chart cell click behavior.
+  // ----------------------------
+  chartDiv.on("plotly_click", function(evt) {
+      var symbol = evt.points[0].customdata;
+      if (!symbol) {
+          console.log("Clicked an empty cell.");
+          return;
+      }
+      // Play the audio for the clicked symbol.
+      if (audioMap[symbol]) {
+          audioEl.src = audioMap[symbol];
+          audioEl.play();
+      }
+
+      if (currentMode === "type") {
+          typedLog.value += symbol;
+      } else if (currentMode === "learn") {
+          if (!roundActive) {
+              feedbackMsg.innerText = "Press 'Next Sound' first.";
+              return;
+          }
+          totalAttempts++;
+          if (symbol === currentTarget) {
+              totalCorrect++;
+              feedbackMsg.innerText = "✅ Correct!";
+              roundActive = false;
+              highlightTarget();
+          } else {
+              feedbackMsg.innerText = "❌ Incorrect, try again.";
+              if (missedSymbols.indexOf(currentTarget) === -1) {
+                  missedSymbols.push(currentTarget);
+              }
+          }
+          updateScoreDisplay();
+      }
+  });
+
+  // ----------------------------
+  // Learn Mode: Next Sound Button.
+  // ----------------------------
+  nextSoundBtn.addEventListener("click", function() {
+      if (remainingSymbols.length === 0) {
+          showSessionSummary();
+          return;
+      }
+      currentTarget = remainingSymbols[Math.floor(Math.random() * remainingSymbols.length)];
+      remainingSymbols = remainingSymbols.filter(function(sym) {
+          return sym !== currentTarget;
+      });
+      roundActive = true;
+      currentQuestion++;
+      updateQuestionStatus();
+      feedbackMsg.innerText = "Listen carefully!";
+      audioEl.src = audioMap[currentTarget];
+      audioEl.play();
+      removeHighlight();
+  });
+
+  // ----------------------------
+  // Learn Mode: Replay Sound Button.
+  // ----------------------------
+  replayBtn.addEventListener("click", function() {
+      if (currentTarget && audioMap[currentTarget]) {
+          audioEl.src = audioMap[currentTarget];
+          audioEl.play();
+      } else {
+          feedbackMsg.innerText = "No sound to replay. Press 'Next Sound'.";
+      }
+  });
+
+  // ----------------------------
+  // Learn Mode: Show Answer Button.
+  // ----------------------------
+  showAnswerBtn.addEventListener("click", function() {
+      if (currentTarget) {
+          feedbackMsg.innerText = "The correct answer is: " + currentTarget;
+          highlightTarget();
+          roundActive = false;
+          if (missedSymbols.indexOf(currentTarget) === -1) {
+              missedSymbols.push(currentTarget);
+          }
+      } else {
+          feedbackMsg.innerText = "Press 'Next Sound' to start.";
+      }
+  });
+
+  // ----------------------------
+  // Learn Mode: Reset Score Button.
+  // ----------------------------
+  resetScoreBtn.addEventListener("click", function() {
+      totalAttempts = 0;
+      totalCorrect = 0;
+      currentQuestion = 0;
+      remainingSymbols = possibleSymbols.slice();
+      updateScoreDisplay();
+      updateQuestionStatus();
+      feedbackMsg.innerText = "Press 'Next Sound' to begin.";
+  });
+
+  // ----------------------------
+  // Learn Mode: New Session Button.
+  // ----------------------------
+  newSessionBtn.addEventListener("click", function() {
+      currentQuestion = 0;
+      totalAttempts = 0;
+      totalCorrect = 0;
+      missedSymbols = [];
+      currentTarget = null;
+      roundActive = false;
+      remainingSymbols = possibleSymbols.slice();
+      feedbackMsg.innerText = "Press 'Next Sound' to start.";
+      updateQuestionStatus();
+      updateScoreDisplay();
+      sessionSummary.style.display = "none";
+      newSessionBtn.style.display = "none";
+      removeHighlight();
+  });
+
+  // ----------------------------
+  // Utility Functions: Update Displays
+  // ----------------------------
+  function updateQuestionStatus() {
+      questionStatus.innerText = "Question: " + currentQuestion + " / " + totalQuestions;
+  }
+
+  function updateScoreDisplay() {
+      scoreDisplay.innerText = "Score: " + totalCorrect + " / " + totalAttempts;
+  }
+
+  function showSessionSummary() {
+      var accuracy = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+      var summary = "Session Complete!\n" +
+                    "Score: " + totalCorrect + " / " + totalAttempts + " (" + accuracy + "%)\n";
+      summary += (missedSymbols.length > 0) ? "Missed Symbols: " + missedSymbols.join(", ") : "Great job! No missed symbols.";
+      sessionSummary.innerText = summary;
+      sessionSummary.style.display = "block";
+      newSessionBtn.style.display = "block";
+  }
+
+  // Highlight the target cell with a red border overlay.
+  function highlightTarget() {
+      var targetFound = false;
+      var currentShapes = chartDiv.layout.shapes.slice();
+      for (var i = 0; i < chartDiv.data[0].customdata.length; i++) {
+          if (chartDiv.data[0].customdata[i] === currentTarget) {
+              var cx = chartDiv.data[0].x[i];
+              var cy = chartDiv.data[0].y[i];
+              var highlight = {
+                  type: "rect",
+                  xref: "x",
+                  yref: "y",
+                  x0: cx - 0.5,
+                  y0: cy - 0.5,
+                  x1: cx + 0.5,
+                  y1: cy + 0.5,
+                  line: { color: "red", width: 4 },
+                  fillcolor: "rgba(255,0,0,0)"
+              };
+              currentShapes.push(highlight);
+              Plotly.relayout("myIpaChart", {"shapes": currentShapes});
+              targetFound = true;
+              break;
+          }
+      }
+      if (!targetFound) {
+          console.log("Target symbol cell not found for highlighting.");
+      }
+  }
+
+  // Remove red highlight overlays.
+  function removeHighlight() {
+      var newShapes = [];
+      var shapes = chartDiv.layout.shapes || [];
+      for (var i = 0; i < shapes.length; i++) {
+          if (!(shapes[i].line && shapes[i].line.color === "red")) {
+              newShapes.push(shapes[i]);
+          }
+      }
+      Plotly.relayout("myIpaChart", {"shapes": newShapes});
+  }
+</script>
